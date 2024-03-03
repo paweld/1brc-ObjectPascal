@@ -117,6 +117,8 @@ var
   line, rts: String;
   rt: String[4];
   dt: TDateTime;
+  NamesArr, TempArr: array of String;
+  i, NamesCount, TempCount: Integer;
 begin
   // Randomize sets this variable depending on the current time
   // We just set it to our own value
@@ -131,6 +133,27 @@ begin
 
   pbpos := 0;
 
+  NamesCount := FStationNames.Count;
+  SetLength(NamesArr, NamesCount);
+  for i := 0 to NamesCount - 1 do
+    NamesArr[i] := FStationNames[i];
+
+  TempCount := 1999;
+  SetLength(TempArr, TempCount);
+  TempArr[0] := '0.0';
+  for i := 1 to 999 do
+  begin
+    rt := IntToStr(randomTemp);
+    case Ord(rt[0]) of
+      1: rts := '0.' + rt;
+      2: rts := rt[1] + '.' + rt[2];
+      3: rts := rt[1] + rt[2] + '.' + rt[3];
+      4: rts := rt[1] + rt[2] + rt[3] + '.' + rt[4];
+    end;
+    TempArr[i * 2 - 1] := rts;
+    TempArr[i * 2] := '-' + rts;
+  end;
+
   try
     outputBufWriter := TWriteBufStream.Create(outputFileStream, 20 * 1024 * 1024);
     try
@@ -140,19 +163,10 @@ begin
       line := '';
       for index := 1 to FLineCount do
       begin
-        stationId := Random(FStationNames.Count);
-        randomTemp := Random(1000);
-        rt := IntToStr(randomTemp);
-        case Ord(rt[0]) of
-          1: rts := '0.' + rt;
-          2: rts := rt[1] + '.' + rt[2];
-          3: rts := rt[1] + rt[2] + '.' + rt[3];
-          4: rts := rt[1] + rt[2] + rt[3] + '.' + rt[4];
-        end;
-        if (randomTemp <> 0) and (Random(2) = 1) then
-          rts := '-' + rts;
-        line := line + FStationNames[stationId] + ';' + rts + #13#10;
-        if index mod 5000 = 0 then
+        stationId := Random(NamesCount);
+        randomTemp := Random(TempCount);
+        line := line + NamesArr[stationId] + ';' + TempArr[randomTemp] + #13#10;
+        if index mod 10000 = 0 then
         begin
           outputFileStream.WriteBuffer(line[1], Length(line));
           line := '';
