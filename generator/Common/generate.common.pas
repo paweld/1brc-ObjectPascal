@@ -114,7 +114,7 @@ var
   randomTemp: Integer;
   outputFileStream: TFileStream;
   outputBufWriter: TWriteBufStream;
-  line: String;
+  line, rts: String;
   rt: String[4];
   dt: TDateTime;
 begin
@@ -144,14 +144,14 @@ begin
         randomTemp := Random(1000);
         rt := IntToStr(randomTemp);
         case Ord(rt[0]) of
-          1: rt := '0.' + rt;
-          2: rt := rt[1] + '.' + rt[2];
-          3: rt := rt[1] + rt[2] + '.' + rt[3];
-          4: rt := rt[1] + rt[2] + rt[3] + '.' + rt[4];
+          1: rts := '0.' + rt;
+          2: rts := rt[1] + '.' + rt[2];
+          3: rts := rt[1] + rt[2] + '.' + rt[3];
+          4: rts := rt[1] + rt[2] + rt[3] + '.' + rt[4];
         end;
         if (randomTemp <> 0) and (Random(2) = 1) then
-          rt := '-' + rt;
-        line := line + FStationNames[stationId] + ';' + rt + #13#10;
+          rts := '-' + rts;
+        line := line + FStationNames[stationId] + ';' + rts + #13#10;
         if index mod 5000 = 0 then
         begin
           outputFileStream.WriteBuffer(line[1], Length(line));
